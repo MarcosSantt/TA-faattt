@@ -117,6 +117,60 @@
   .location-btn svg { width:16px; height:16px; flex-shrink:0; }
 
   footer { position:relative; z-index:1; text-align:center; padding: 2rem 1rem calc(2.5rem + var(--safe-bottom)); font-family:'EB Garamond', serif; font-style: italic; font-size:0.9rem; color: var(--text-light); letter-spacing:0.1em; }
+
+  /* ---------- RESPONSIVIDADE ---------- */
+
+  /* nada deve estourar a largura da tela */
+  .hero-subtitle, .section-label, .lineup-name, .evento-label { overflow-wrap:break-word; max-width:100%; }
+
+  /* Celulares pequenos (iPhone SE, Android compactos) — até 380px */
+  @media (max-width: 380px) {
+    #hero { padding-left: 1.1rem; padding-right: 1.1rem; }
+    .hero-subtitle { letter-spacing: 0.22em; }
+    .hero-corner.tl { width: 92px; }
+    .hero-corner.tr { width: 74px; }
+    .hero-corner.bl { width: 84px; }
+    .hero-corner.br { width: 74px; }
+    .lineup-row, .evento-row { flex-direction: column; align-items: center; }
+    .lineup-box, .evento-box { width: 100%; max-width: 300px; }
+    .letter-card::before, .letter-card::after { display: none; }
+  }
+
+  /* Celular na horizontal (paisagem, altura baixa) */
+  @media (max-height: 500px) and (orientation: landscape) {
+    #hero { min-height: auto; padding-top: 3.5rem; padding-bottom: 3.5rem; }
+    .scroll-hint { display: none; }
+    .hero-corner { display: none; }
+  }
+
+  /* Tablets / notebooks pequenos */
+  @media (min-width: 700px) {
+    .lineup-row, .evento-row { flex-wrap: nowrap; }
+  }
+
+  /* Notebooks e desktops grandes */
+  @media (min-width: 1200px) {
+    section { max-width: 1000px; }
+    .photo-frame { max-width: 520px; }
+  }
+
+  /* Telas de alta densidade — deixa as bordas decorativas mais nítidas */
+  @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .hero-corner path, .hero-corner rect, .hero-corner polygon, .hero-corner line { shape-rendering: geometricPrecision; }
+  }
+
+  /* Respeita quem prefere menos animação */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .reveal { opacity: 1 !important; transform: none !important; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* Dispositivos sem hover (touch): remove efeitos de mouse */
+  @media (hover: none) {
+    .confirm-btn:hover { background: var(--wine); transform: none; }
+    .location-btn:hover { background: var(--blush); transform: none; }
+  }
 </style>
 </head>
 <body>
@@ -264,7 +318,8 @@
   function mkP(){ return { x: Math.random()*W, y: H+20, size: Math.random()*12+7, speedY: Math.random()*0.5+0.15, speedX:(Math.random()-0.5)*0.3, opacity: Math.random()*0.4+0.12, symbol: SYMBOLS[Math.floor(Math.random()*SYMBOLS.length)], color: ['#8a6d3b','#2b2013','#c9b381'][Math.floor(Math.random()*3)], wobble: Math.random()*Math.PI*2, wobbleSpeed: Math.random()*0.012+0.004 }; }
   function init(){ resize(); particles = Array.from({length:26}, mkP).map(p=>{ p.y = Math.random()*H; return p; }); }
   function animate(){ ctx.clearRect(0,0,W,H); particles.forEach(p=>{ p.y -= p.speedY; p.wobble += p.wobbleSpeed; p.x += Math.sin(p.wobble)*0.4 + p.speedX; if(p.y < -30) Object.assign(p, mkP()); ctx.save(); ctx.globalAlpha = p.opacity; ctx.fillStyle = p.color; ctx.font = `${p.size}px serif`; ctx.fillText(p.symbol, p.x, p.y); ctx.restore(); }); requestAnimationFrame(animate); }
-  window.addEventListener('resize', resize); init(); animate();
+  window.addEventListener('resize', resize); init();
+  if (!window.matchMedia || !window.matchMedia('(prefers-reduced-motion: reduce)').matches) { animate(); }
 })();
 
 /* Scroll reveal */
